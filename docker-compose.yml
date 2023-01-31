@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    container_name: db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: test
+
+  benchmark-service:
+    depends_on:
+      - db
+    image: registry.apps.man.poznan.pl/kiwi-dev/benchmark-service:0.0.1
+    container_name: benchmark-service
+    deploy:
+      update_config:
+        order: start-first
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://db:5432/test'
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+    ports:
+      - "8182:8182"
